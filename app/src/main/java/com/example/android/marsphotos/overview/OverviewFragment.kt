@@ -20,9 +20,31 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import androidx.databinding.BindingAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.example.android.marsphotos.R
 import com.example.android.marsphotos.databinding.FragmentOverviewBinding
+import com.example.android.marsphotos.databinding.GridViewItemBinding
+
+@BindingAdapter("marsApiStatus")
+fun bindStatus(statusImageView: ImageView,
+               status: MarsApiStatus?) {
+    when (status) {
+        MarsApiStatus.LOADING -> {
+            statusImageView.visibility = View.VISIBLE
+            statusImageView.setImageResource(R.drawable.loading_animation)
+        }
+        MarsApiStatus.ERROR -> {
+            statusImageView.visibility = View.VISIBLE
+            statusImageView.setImageResource(R.drawable.ic_connection_error)
+        }
+        MarsApiStatus.DONE -> {
+            statusImageView.visibility = View.GONE
+        }
+    }
+}
 
 /**
  * This fragment shows the the status of the Mars photos web services transaction.
@@ -40,12 +62,14 @@ class OverviewFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val binding = FragmentOverviewBinding.inflate(inflater)
+        //val binding = GridViewItemBinding.inflate(inflater)
 
         // Allows Data Binding to Observe LiveData with the lifecycle of this Fragment
         binding.lifecycleOwner = this
 
         // Giving the binding access to the OverviewViewModel
         binding.viewModel = viewModel
+        binding.photosGrid.adapter = PhotoGridAdapter()
 
         return binding.root
     }
